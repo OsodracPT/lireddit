@@ -1,5 +1,9 @@
 .DS_STORE
 node_modules
+dist/src/entities/migrations
+dist/**/*.map
+dist/**/*.js
+src/migrations/
 scripts/flow/*/.flowconfig
 .flowconfig
 *~
