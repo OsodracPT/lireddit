@@ -46,6 +46,19 @@ export class UserResolver {
       //you are not logged in
       return null;
     }
+
+    // const result = await (em as EntityManager).createQueryBuilder(User).getKnexQuery().insert(
+    //   {
+    //     username: options.username,
+    //     password: hashedPassword,
+    //     created_at: new Date(),
+    //     updated_at: new Date(),
+    //   }
+    // ).returning("*");
+
+    // user = result[0];
+    // console.log(user);
+
     const user = await em.findOne(User, { id: req.session.userId });
     return user;
   }
@@ -53,7 +66,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg('options', () => UsernamePasswordInput) options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext,
+    @Ctx() { em, req }: MyContext,
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
@@ -66,7 +79,7 @@ export class UserResolver {
       };
     }
 
-    if (options.username.length <= 6) {
+    if (options.password.length <= 6) {
       return {
         errors: [
           {
@@ -83,6 +96,7 @@ export class UserResolver {
       password: hashedPassword,
     });
     try {
+      em.create
       await em.persistAndFlush(user);
     } catch (error) {
       //duplicate username error
@@ -97,6 +111,8 @@ export class UserResolver {
         };
       }
     }
+
+    req.session.userId = user.id;
     return {
       user,
     };
